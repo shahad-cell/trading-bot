@@ -39,6 +39,12 @@ def fetch_price_history(ticker: str, days: int = 365) -> pd.DataFrame:
             interval="1d",
             progress=False,
         )
+
+        # بعض إصدارات yfinance ترجع أعمدة بمستويين (MultiIndex)
+        # حتى لو سهم واحد بس — نبسّطها لعمود عادي عشان الكود يشتغل صح
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+
         if data.empty:
             print(f"⚠️ ما رجعت بيانات لسهم {ticker} — تأكد من صحة الرمز أو جرّب مصدر ثاني.")
         return data
